@@ -1,4 +1,3 @@
-console.log(module);
 
 class Whatever {
 

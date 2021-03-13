@@ -38,7 +38,6 @@ app.use(async function mysqlConnection(req, res, next) {
     req.db.release();
   } catch (err) {
     // If anything downstream throw an error, we must release the connection allocated for the request
-    console.log(err)
     if (req.db) req.db.release();
     throw err;
   }
@@ -49,7 +48,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.get('/user', async function(req, res) {
-  console.log('asdfasdF')
   try {
     const user = {
       name: 'Connor',
@@ -59,7 +57,6 @@ app.get('/user', async function(req, res) {
 
     res.json(user);
   } catch(err) {
-    console.log('Error in /user', err)
   }
 });
 
@@ -82,9 +79,7 @@ app.post('/register', async function (req, res) {
           password: hash
         });
 
-        console.log('user', user)
       } catch (error) {
-        console.log('error', error)
       }
     });
 
@@ -98,7 +93,6 @@ app.post('/register', async function (req, res) {
 
     res.json(encodedUser);
   } catch (err) {
-    console.log('err', err)
   }
 });
 
@@ -114,15 +108,9 @@ app.post('/auth', async function (req, res) {
       res.json('Email not found');
     }
 
-    console.log('user', user)
-
     const userPassword = `${user.password}`
 
-    console.log('userPassword', userPassword);
-
     const compare = await bcrypt.compare(req.body.password, userPassword);
-
-    console.log('compare', compare);
 
     if (compare) {
       const payload = {
@@ -140,21 +128,17 @@ app.post('/auth', async function (req, res) {
       res.json('Password not found');
     }
   } catch (err) {
-    console.log('Error in /auth', err)
   }
 })
 
 
  // Jwt verification checks to see if there is an authorization header with a valid jwt in it.
 app.use(async function verifyJwt(req, res, next) {
-  // console.log('REQUESTTTT', req.headers)
   if (!req.headers.authorization) {
     throw(401, 'Invalid authorization');
   }
 
   const [scheme, token] = req.headers.authorization.split(' ');
-
-  console.log('[scheme, token]', scheme, ' ', token);
 
   if (scheme !== 'Bearer') {
     throw(401, 'Invalid authorization');
@@ -162,8 +146,6 @@ app.use(async function verifyJwt(req, res, next) {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_KEY);
-
-    console.log('payload', payload)
 
     req.user = payload;
   } catch (err) {
@@ -176,7 +158,6 @@ app.use(async function verifyJwt(req, res, next) {
 
       throw((err.status || 500), err.message);
     }
-    console.log(err)
   }
 
   await next();
@@ -197,9 +178,7 @@ app.get('/user-notes', async function(req, res) {
 
     res.json(notes);
 
-    console.log('/user-notes', notes);
   } catch (err) {
-    console.log('/user-notes error', err)
   }
 });
 
@@ -245,10 +224,7 @@ app.post('/post-note', async function (req, res) {
       message: 'Note created succesfull',
       noteId: notes.insertId
     })
-    // res.json(notes)
-    console.log("notes", notes)
   } catch (err) {
-    console.log('post /', err)
   }
 });
 
